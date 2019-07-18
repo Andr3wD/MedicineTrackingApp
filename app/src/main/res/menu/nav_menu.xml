@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.mangareader.MainActivity">
+    <item
+        android:id="@+id/nav_addentry"
+        android:orderInCategory="100"
+        android:title="Add Entry"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/nav_medicinehistory"
+        android:orderInCategory="99"
+        android:title="History"
+        app:showAsAction="never" />
+</menu>

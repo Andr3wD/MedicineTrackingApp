@@ -64,7 +64,10 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
     @Override
     public void onItemClick(View view, int position) {
         //TODO switch to bundle instead of constructor
-        MedicineHistoryDetailPage page = new MedicineHistoryDetailPage(MainActivity.medicineManager.medicineHistoryList.get(position)); //TODO make sure gets correct medicine
+        Bundle b = new Bundle();
+        b.putInt("displayMedInt",position);
+        MedicineHistoryDetailPage page = new MedicineHistoryDetailPage(); //TODO make sure gets correct medicine
+        page.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).commit();
         Log.i("test", "clickhistory " + position);
     }

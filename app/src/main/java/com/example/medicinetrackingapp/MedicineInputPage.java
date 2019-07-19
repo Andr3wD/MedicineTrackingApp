@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,8 @@ public class MedicineInputPage extends Fragment {
                 newEntry.name = ((TextView) v.getRootView().findViewById(R.id.nameText)).getText().toString();
                 newEntry.reason = ((TextView) v.getRootView().findViewById(R.id.reasonText)).getText().toString();
                 newEntry.quantity = Long.parseLong(((TextView) v.getRootView().findViewById(R.id.quantityText)).getText().toString());
-
+                newEntry.dose = 0;
+                Log.i("test", "Adding to list"); //TODO fix why this isn't working
                 MainActivity.medicineManager.add(newEntry);
                 getFragmentManager().popBackStack(); //pops back of stack, which should be the input page added from the history page
                 //getFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineInputPage()).commit();

@@ -7,12 +7,13 @@ import java.util.Date;
 public class IndividualMedicine implements Serializable, Comparable<IndividualMedicine> {
     public String name;
     public Calendar takenDateTime;
-    private long inputTimeDate;
-    public long quantity;
+    public final Calendar inputTimeDate;
+    public Long quantity;
     public String reason;
+    public int dose;
 
     IndividualMedicine() {
-        inputTimeDate = System.currentTimeMillis();
+        inputTimeDate = Calendar.getInstance();
         takenDateTime = Calendar.getInstance();
     }
 

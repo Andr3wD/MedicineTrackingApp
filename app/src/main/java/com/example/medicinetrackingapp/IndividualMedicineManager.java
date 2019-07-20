@@ -20,7 +20,8 @@ public class IndividualMedicineManager implements Serializable {
 
     public void add(IndividualMedicine m) {
         for (int i = 0; i < medicineHistoryList.size(); i++) {
-            if (m.compareTo(medicineHistoryList.get(i)) > 0) {
+            Log.i("test", "Comparison result: " + m.compareTo(medicineHistoryList.get(i)));
+            if (m.compareTo(medicineHistoryList.get(i)) >= 0) {
                 Log.i("test", "Adding new entry1");
                 medicineHistoryList.add(i, m);
                 save();
@@ -32,8 +33,11 @@ public class IndividualMedicineManager implements Serializable {
             medicineHistoryList.add(m);
             save();
             return;
+        } else {
+            Log.i("test", "size is: " + medicineHistoryList.size());
         }
         Log.i("test", "Not adding new entry");
+        medicineHistoryList.add(medicineHistoryList.size(), m);
     }
 
     public IndividualMedicine findByName(String name) {
@@ -63,6 +67,8 @@ public class IndividualMedicineManager implements Serializable {
     }
 
     public void remove(int index) {
-
+        //TODO make temp save of deleted item for possible undo-ing
+        medicineHistoryList.remove(index);
+        save();
     }
 }

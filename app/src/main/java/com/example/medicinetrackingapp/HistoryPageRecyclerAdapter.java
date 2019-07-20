@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPageRecyclerAdapter.ViewHolder> {
     private IndividualMedicine[] mData;
@@ -34,21 +36,12 @@ public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPage
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.i("test", Boolean.toString(holder.myNameView == null));
-        holder.myDateView.setText(mData[position].takenDateTime.get(Calendar.MONTH) + "/" + mData[position].takenDateTime.get(Calendar.DAY_OF_MONTH));
-        holder.myNameView.setText(mData[position].name); //TODO remove ""
-        String ampm = "";
-        if (mData[position].takenDateTime.get(Calendar.AM_PM) == 1) {
-            ampm = "pm";
-        } else {
-            ampm = "am";
-        }
-        int hour = 0;
-        if (mData[position].takenDateTime.get(Calendar.HOUR) == 0) {
-            hour = 12;
-        } else {
-            hour = mData[position].takenDateTime.get(Calendar.HOUR);
-        }
-        holder.myTimeView.setText(hour + ":" + mData[position].takenDateTime.get(Calendar.MINUTE) + ampm); //TODO fix am/pm not showing
+        holder.myDateView.setText(String.format(Locale.getDefault(), "%d/%d", mData[position].takenDateTime.get(Calendar.MONTH),mData[position].takenDateTime.get(Calendar.DAY_OF_MONTH)));
+        holder.myNameView.setText(mData[position].name);
+
+        SimpleDateFormat s = new SimpleDateFormat("h:mm aa", Locale.getDefault());
+
+        holder.myTimeView.setText(s.format(mData[position].takenDateTime.getTime()));
         holder.myQuantityView.setText(Long.toString(mData[position].quantity));
     }
 
@@ -61,10 +54,10 @@ public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPage
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView myNameView;
-        public TextView myTimeView;
-        public TextView myQuantityView;
-        public TextView myDateView;
+        private TextView myNameView;
+        private TextView myTimeView;
+        private TextView myQuantityView;
+        private TextView myDateView;
 
         ViewHolder(View itemView) {
             super(itemView);

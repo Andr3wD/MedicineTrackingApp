@@ -22,8 +22,8 @@ import java.util.Hashtable;
 public class MainActivity extends AppCompatActivity {
 
     public static IndividualMedicineManager medicineManager;
-    //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ReadPage()).commit();
-
+    //TODO add dark theme
+    //TODO add reason to specific page
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

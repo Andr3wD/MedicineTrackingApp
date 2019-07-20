@@ -68,7 +68,7 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
         b.putInt("displayMedInt",position);
         MedicineHistoryDetailPage page = new MedicineHistoryDetailPage(); //TODO make sure gets correct medicine
         page.setArguments(b);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).addToBackStack(null).commit();
         Log.i("test", "clickhistory " + position);
     }
 }

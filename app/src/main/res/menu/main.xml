@@ -6,4 +6,15 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_remembermedicine"
+        android:orderInCategory="99"
+        android:title="Add Remember Medicine"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_remembermedicinelist"
+        android:orderInCategory="98"
+        android:title="Remember Medicine List"
+        app:showAsAction="never" />
 </menu>

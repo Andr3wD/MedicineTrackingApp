@@ -2,13 +2,12 @@ package com.example.medicinetrackingapp;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 
 public class IndividualMedicine implements Serializable, Comparable<IndividualMedicine> {
     public String name;
     public Calendar takenDateTime;
     public final Calendar inputTimeDate;
-    public Long quantity;
+    public int quantity;
     public String reason;
     public int dose;
 

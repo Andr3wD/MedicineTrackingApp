@@ -53,7 +53,7 @@ public class IndividualMedicineManager implements Serializable {
         ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
-            fos = fileContext.openFileOutput("testFile", Context.MODE_PRIVATE);
+            fos = fileContext.openFileOutput("testFileIndividualMedicine", Context.MODE_PRIVATE);
             os = new ObjectOutputStream(fos);
             os.writeObject(medicineHistoryList);
             os.close();

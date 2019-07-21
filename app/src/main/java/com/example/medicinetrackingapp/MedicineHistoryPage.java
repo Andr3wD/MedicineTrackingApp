@@ -12,21 +12,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
 public class MedicineHistoryPage extends Fragment implements HistoryPageRecyclerAdapter.ItemClickListener {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.medicine_history_fragment, container, false);
+        setHasOptionsMenu(true);
         return v;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         FloatingActionButton fab = view.findViewById(R.id.fab); //add entry button
+        FloatingActionButton fabscan = view.findViewById(R.id.fabscan); //add entry button
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,7 +34,14 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
             }
         });
 
-        //TODO add date separators for medicines taken
+        fabscan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new BarcodeScannerPage()).addToBackStack(null).commit();
+            }
+        });
+
+
 
         /*
         ArrayList<IndividualMedicine> newList = (ArrayList<IndividualMedicine>) MainActivity.medicineManager.medicineHistoryList.clone();
@@ -63,9 +69,9 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
 
     @Override
     public void onItemClick(View view, int position) {
-        //TODO switch to bundle instead of constructor
+
         Bundle b = new Bundle();
-        b.putInt("displayMedInt",position);
+        b.putInt("displayMedInt", position);
         MedicineHistoryDetailPage page = new MedicineHistoryDetailPage(); //TODO make sure gets correct medicine
         page.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).addToBackStack(null).commit();

@@ -34,8 +34,8 @@ public class MedicineHistoryDetailPage extends Fragment {
         //display all the info in the specific medicine history fragment
         ((TextView) view.findViewById(R.id.doseview)).setText(Integer.toString(displayMed.dose));
         ((TextView) view.findViewById(R.id.nameview)).setText(displayMed.name);
-        ((TextView) view.findViewById(R.id.quantityview)).setText(displayMed.quantity.toString());
-        SimpleDateFormat d = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
+        ((TextView) view.findViewById(R.id.quantityview)).setText(Integer.toString(displayMed.quantity));
+        SimpleDateFormat d = new SimpleDateFormat("h:mm aa", Locale.getDefault());
         ((TextView) view.findViewById(R.id.timetakenview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(displayMed.takenDateTime.getTime()), displayMed.takenDateTime.get(Calendar.MONTH), displayMed.takenDateTime.get(Calendar.DAY_OF_MONTH), displayMed.takenDateTime.get(Calendar.YEAR)));
         ((TextView) view.findViewById(R.id.timeinputtedview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(displayMed.inputTimeDate.getTime()), displayMed.inputTimeDate.get(Calendar.MONTH), displayMed.inputTimeDate.get(Calendar.DAY_OF_MONTH), displayMed.inputTimeDate.get(Calendar.YEAR)));
 

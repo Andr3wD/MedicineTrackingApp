@@ -15,10 +15,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class MedicineInputPage extends Fragment {
 
@@ -44,7 +42,7 @@ public class MedicineInputPage extends Fragment {
                 try {
                     newEntry.name = ((TextView) v.getRootView().findViewById(R.id.nameText)).getText().toString();
                     newEntry.reason = ((TextView) v.getRootView().findViewById(R.id.reasonText)).getText().toString();
-                    newEntry.quantity = Long.parseLong(((TextView) v.getRootView().findViewById(R.id.quantityText)).getText().toString());
+                    newEntry.quantity = Integer.parseInt(((TextView) v.getRootView().findViewById(R.id.quantityText)).getText().toString());
                     newEntry.dose = 0;
                 } catch (Exception e) {
                     Toast.makeText(getContext(), "Cannot leave anything empty", Toast.LENGTH_SHORT).show();

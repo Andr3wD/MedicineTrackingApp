@@ -36,6 +36,9 @@ public class IndividualMedicineManager implements Serializable {
         } else {
             Log.i("test", "size is: " + medicineHistoryList.size());
         }
+        if (m.baseCustomMedicine != null && m.baseCustomMedicine.medsLeft > 0) {
+            m.baseCustomMedicine.medsLeft--;
+        }
         Log.i("test", "Not adding new entry");
         medicineHistoryList.add(medicineHistoryList.size(), m);
     }

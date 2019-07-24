@@ -16,7 +16,7 @@ public class RememberMedicinePage extends Fragment implements RememberPageRecycl
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.remember_medicine_fragment, container, false);
-
+        getActivity().setTitle("Custom Medicines");
         return v;
     }
 

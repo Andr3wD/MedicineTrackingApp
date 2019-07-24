@@ -11,14 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-public class MedicineHistoryPage extends Fragment implements HistoryPageRecyclerAdapter.ItemClickListener {
+import java.util.Calendar;
+
+public class MedicineHistoryPage extends Fragment implements HistoryPageRecyclerAdapter.ItemClickListener, BarcodeScannerPage.OnScanListener {
+
+    MedicineHistoryPage me;
+    boolean successfulScan;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.medicine_history_fragment, container, false);
         setHasOptionsMenu(true);
+        getActivity().setTitle("Medicine History");
+        me = this;
         return v;
     }
 
@@ -26,6 +34,7 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         FloatingActionButton fab = view.findViewById(R.id.fab); //add entry button
         FloatingActionButton fabscan = view.findViewById(R.id.fabscan); //add entry button
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,25 +46,12 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
         fabscan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new BarcodeScannerPage()).addToBackStack(null).commit();
+                BarcodeScannerPage b = new BarcodeScannerPage();
+                b.setScanListener(me);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, b).addToBackStack(null).commit();
             }
         });
 
-
-
-        /*
-        ArrayList<IndividualMedicine> newList = (ArrayList<IndividualMedicine>) MainActivity.medicineManager.medicineHistoryList.clone();
-        for (int i = 1; i < newList.size(); i++) {
-            Calendar currentCal = newList.get(i).takenDateTime;
-            Calendar previousCal = newList.get(i - 1).takenDateTime;
-            if (currentCal.get(Calendar.DAY_OF_MONTH) > previousCal.get(Calendar.DAY_OF_MONTH) || currentCal.get(Calendar.YEAR) > previousCal.get(Calendar.YEAR) || currentCal.get(Calendar.MONTH) > previousCal.get(Calendar.MONTH)) {
-                IndividualMedicine temp = new IndividualMedicine();
-                temp.takenDateTime = previousCal;
-                newList.add(i, temp);
-                i++;
-            }
-        }
-        */
 
         RecyclerView rV = ((RecyclerView) view.findViewById(R.id.history_recyclerview));
         rV.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -76,5 +72,34 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
         page.setArguments(b);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).addToBackStack(null).commit();
         Log.i("test", "clickhistory " + position);
+    }
+
+    @Override
+    public void onResume() {
+        if(successfulScan == false){
+            Toast.makeText(getContext(), "Unknown Code", Toast.LENGTH_SHORT).show();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onScan(String code) {
+        getFragmentManager().popBackStack();
+
+        IndividualCustomMedicine data = MainActivity.customMedicineManager.exists(code);
+        if (data != null) { //Barcode has already been recorded into remembered medicine
+            IndividualMedicine entry = new IndividualMedicine();
+            entry.name = data.name;
+            entry.quantity = data.quantity;
+            entry.reason = data.reason;
+            entry.dose = data.dose;
+            entry.takenDateTime = Calendar.getInstance();
+            //TODO add use to entry edit page and other places
+            MainActivity.medicineManager.add(entry);
+            getFragmentManager().popBackStack();
+            successfulScan = true;
+        } else { //doesn't exist already, throw up a toast
+            successfulScan = false;
+        }
     }
 }

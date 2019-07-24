@@ -25,12 +25,12 @@ public class MedicineHistoryDetailPage extends Fragment {
         setHasOptionsMenu(true);
         Bundle b = getArguments();
         position = (int) b.get("displayMedInt");
-        displayMed = MainActivity.medicineManager.medicineHistoryList.get(position);
         return v;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        displayMed = MainActivity.medicineManager.medicineHistoryList.get(position);
         //display all the info in the specific medicine history fragment
         ((TextView) view.findViewById(R.id.doseview)).setText(Integer.toString(displayMed.dose));
         ((TextView) view.findViewById(R.id.nameview)).setText(displayMed.name);
@@ -53,6 +53,11 @@ public class MedicineHistoryDetailPage extends Fragment {
         view.findViewById(R.id.editbutton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putInt("editMedicine",position);
+                MedicineEditPage page = new MedicineEditPage(); //TODO make sure gets correct medicine
+                page.setArguments(b);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).addToBackStack(null).commit();
                 //TODO make switch to add_medicine_fragment and populate elements, then overwrite after clicking finished
             }
         });

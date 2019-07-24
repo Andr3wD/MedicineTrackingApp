@@ -12,6 +12,7 @@ public class IndividualCustomMedicine implements Serializable {
     public String reason;
     public ArrayList<String> barcodes; //had to switch from SparseList to ArrayList because it isn't serializable
     private Calendar createdTimeDate;
+    public int medsLeft; //how many pills, etc. are left of the remembered medicine.
 
     public IndividualCustomMedicine(){
         createdTimeDate = Calendar.getInstance();

@@ -10,6 +10,7 @@ public class IndividualMedicine implements Serializable, Comparable<IndividualMe
     public int quantity;
     public String reason;
     public int dose;
+    public IndividualCustomMedicine baseCustomMedicine;
 
     IndividualMedicine() {
         inputTimeDate = Calendar.getInstance();

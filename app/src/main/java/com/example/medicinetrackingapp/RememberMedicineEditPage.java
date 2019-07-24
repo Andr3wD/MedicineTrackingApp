@@ -16,6 +16,8 @@ public class RememberMedicineEditPage extends Fragment {
 
     private int position;
 
+    //TODO implement barcode stuff and make it work
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -23,6 +25,7 @@ public class RememberMedicineEditPage extends Fragment {
         setHasOptionsMenu(false);
         Bundle b = getArguments();
         position = (int) b.get("displayRememberMedicinePosition");
+        getActivity().setTitle("Edit Custom Medicine");
         return v;
     }
 
@@ -39,9 +42,11 @@ public class RememberMedicineEditPage extends Fragment {
                     entry.dose = Integer.parseInt(((TextView) v.getRootView().findViewById(R.id.remember_input_dose)).getText().toString());
                     entry.reason = ((TextView) v.getRootView().findViewById(R.id.remember_input_reason)).getText().toString();
                     entry.use = ((TextView) v.getRootView().findViewById(R.id.remember_input_use)).getText().toString();
+                    entry.quantity = Integer.parseInt(((TextView) v.getRootView().findViewById(R.id.remember_input_quantity)).getText().toString());
+                    entry.medsLeft = Integer.parseInt(((TextView) v.getRootView().findViewById(R.id.remember_input_medsleft)).getText().toString());
+
 
                     //dealing with barcode list
-                    entry.quantity = Integer.parseInt(((TextView) v.getRootView().findViewById(R.id.remember_input_quantity)).getText().toString());
                     String[] s = ((TextView) v.getRootView().findViewById(R.id.remember_input_barcodes)).getText().toString().split(" ");
                     ArrayList a = new ArrayList();
                     for (int i = 0; i < s.length; i++) {
@@ -65,6 +70,7 @@ public class RememberMedicineEditPage extends Fragment {
         ((TextView) view.findViewById(R.id.remember_input_reason)).setText(MainActivity.customMedicineManager.rememberedMedicineList.get(position).reason);
         ((TextView) view.findViewById(R.id.remember_input_use)).setText(MainActivity.customMedicineManager.rememberedMedicineList.get(position).use);
         ((TextView) view.findViewById(R.id.remember_input_quantity)).setText(Integer.toString(MainActivity.customMedicineManager.rememberedMedicineList.get(position).quantity));
+        ((TextView) view.findViewById(R.id.remember_input_medsleft)).setText(Integer.toString(MainActivity.customMedicineManager.rememberedMedicineList.get(position).medsLeft));
 
         //dealing with setting the barcodes, which there could be multiple, so it's an array, so I need to deal with turing it into a string
         String s = "";

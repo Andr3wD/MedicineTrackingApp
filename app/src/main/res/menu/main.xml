@@ -7,7 +7,7 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_remembermedicine"
+        android:id="@+id/action_addremembermedicine"
         android:orderInCategory="99"
         android:title="Add Remember Medicine"
         app:showAsAction="never" />

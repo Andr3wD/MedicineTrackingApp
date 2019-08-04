@@ -3,6 +3,7 @@ package com.example.medicinetrackingapp;
 import java.io.Serializable;
 import java.util.Calendar;
 
+@Deprecated
 public class IndividualMedicine implements Serializable, Comparable<IndividualMedicine> {
     public String name;
     public Calendar takenDateTime;

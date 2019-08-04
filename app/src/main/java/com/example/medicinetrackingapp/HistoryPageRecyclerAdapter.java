@@ -1,25 +1,29 @@
 package com.example.medicinetrackingapp;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import datastuff.IndividualMedicineEntity;
+
 public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPageRecyclerAdapter.ViewHolder> {
-    private IndividualMedicine[] mData;
+    private ArrayList<IndividualMedicineEntity> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    HistoryPageRecyclerAdapter(Context context, IndividualMedicine[] data) {
+    HistoryPageRecyclerAdapter(Context context, ArrayList<IndividualMedicineEntity> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -36,19 +40,24 @@ public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPage
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.i("test", Boolean.toString(holder.myNameView == null));
-        holder.myDateView.setText(String.format(Locale.getDefault(), "%d/%d", mData[position].takenDateTime.get(Calendar.MONTH),mData[position].takenDateTime.get(Calendar.DAY_OF_MONTH)));
-        holder.myNameView.setText(mData[position].name);
+        if (mData.get(position) != null) {
 
-        SimpleDateFormat s = new SimpleDateFormat("h:mm aa", Locale.getDefault());
+            Calendar takenDateTime = Calendar.getInstance();
+            takenDateTime.setTimeInMillis(mData.get(position).takenDateTime);
+            holder.myDateView.setText(String.format(Locale.getDefault(), "%d/%d", takenDateTime.get(Calendar.MONTH), takenDateTime.get(Calendar.DAY_OF_MONTH)));
+            holder.myNameView.setText(mData.get(position).name);
 
-        holder.myTimeView.setText(s.format(mData[position].takenDateTime.getTime()));
-        holder.myQuantityView.setText(Long.toString(mData[position].quantity));
+            SimpleDateFormat s = new SimpleDateFormat("h:mm aa", Locale.getDefault());
+
+            holder.myTimeView.setText(s.format(takenDateTime.getTime()));
+            holder.myQuantityView.setText(Long.toString(mData.get(position).quantity));
+        }
     }
 
     // total number of cells
     @Override
     public int getItemCount() {
-        return mData.length;
+        return mData.size();
     }
 
 
@@ -79,8 +88,8 @@ public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPage
     }
 
     // convenience method for getting data at click position
-    IndividualMedicine getItem(int id) {
-        return mData[id];
+    IndividualMedicineEntity getItem(int id) {
+        return mData.get(id);
     }
 
     // allows clicks events to be caught

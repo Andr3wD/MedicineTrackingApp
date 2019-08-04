@@ -1,20 +1,25 @@
 package com.example.medicinetrackingapp;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class RememberPageRecyclerAdapter extends RecyclerView.Adapter<RememberPageRecyclerAdapter.ViewHolder> {
-    private IndividualCustomMedicine[] mData;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+import datastuff.CustomMedicineEntity;
+
+public class CustomPageRecyclerAdapter extends RecyclerView.Adapter<CustomPageRecyclerAdapter.ViewHolder> {
+    private List<CustomMedicineEntity> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    RememberPageRecyclerAdapter(Context context, IndividualCustomMedicine[] data) {
+    CustomPageRecyclerAdapter(Context context, List<CustomMedicineEntity> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -30,24 +35,27 @@ public class RememberPageRecyclerAdapter extends RecyclerView.Adapter<RememberPa
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.myNameView.setText(mData[position].name);
+        holder.myNameView.setText(mData.get(position).name);
+        holder.myLeftView.setText(Integer.toString(mData.get(position).medicineLeft));
     }
 
     // total number of cells
     @Override
     public int getItemCount() {
-        return mData.length;
+        return mData.size();
     }
 
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView myNameView;
+        private TextView myLeftView;
 
 
         ViewHolder(View itemView) {
             super(itemView);
             myNameView = itemView.findViewById(R.id.recycler_remember_nameview);
+            myLeftView = itemView.findViewById(R.id.recycler_remember_left);
 
             itemView.setOnClickListener(this);
         }
@@ -61,8 +69,8 @@ public class RememberPageRecyclerAdapter extends RecyclerView.Adapter<RememberPa
     }
 
     // convenience method for getting data at click position
-    IndividualCustomMedicine getItem(int id) {
-        return mData[id];
+    CustomMedicineEntity getItem(int id) {
+        return mData.get(id);
     }
 
     // allows clicks events to be caught

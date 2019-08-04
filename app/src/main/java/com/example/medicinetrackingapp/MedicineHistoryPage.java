@@ -1,24 +1,33 @@
 package com.example.medicinetrackingapp;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import datastuff.CustomMedicineEntity;
+import datastuff.IndividualMedicineEntity;
 
 public class MedicineHistoryPage extends Fragment implements HistoryPageRecyclerAdapter.ItemClickListener, BarcodeScannerPage.OnScanListener {
 
     MedicineHistoryPage me;
-    boolean successfulScan;
+    LinearLayoutManager lM;
+    boolean loadingNewData = true;
+    ArrayList<IndividualMedicineEntity> currentlyLoadedData; //Going to just make loaded data reset every time as to reduce amount of data loaded at a time.
+    HistoryPageRecyclerAdapter hPRA;
 
     @Nullable
     @Override
@@ -27,6 +36,12 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
         setHasOptionsMenu(true);
         getActivity().setTitle("Medicine History");
         me = this;
+        currentlyLoadedData = new ArrayList<>();//At the beginning, I want a few entries already there
+        for (int i = 0; i < 20; i++) {
+            if (MainActivity.medicineDatabase.individualMedicineDao().size() > i) {
+                currentlyLoadedData.add(i, MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(i));
+            }
+        }
         return v;
     }
 
@@ -39,7 +54,8 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineInputPage()).addToBackStack(null).commit();
+                MedicineInputPage inputPage = new MedicineInputPage();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, inputPage).addToBackStack(null).commit();
             }
         });
 
@@ -54,11 +70,37 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
 
 
         RecyclerView rV = ((RecyclerView) view.findViewById(R.id.history_recyclerview));
-        rV.setLayoutManager(new LinearLayoutManager(getContext()));
-        IndividualMedicine[] s = new IndividualMedicine[MainActivity.medicineManager.medicineHistoryList.size()];
-        HistoryPageRecyclerAdapter hPRA = new HistoryPageRecyclerAdapter(getContext(), MainActivity.medicineManager.medicineHistoryList.toArray(s));
+        lM = new LinearLayoutManager(getContext());
+        rV.setLayoutManager(lM);
+
+        hPRA = new HistoryPageRecyclerAdapter(getContext(), currentlyLoadedData);
         hPRA.setClickListener(this);
         rV.setAdapter(hPRA);
+
+        /*IndividualMedicineEntity i = new IndividualMedicineEntity();
+        i.name = "TestName";
+        i.dose = 1;
+        i.quantity = 2;
+        i.position = 2;
+        currentlyLoadedData.add(i);*/
+
+        rV.addOnScrollListener(new RecyclerView.OnScrollListener() {//Infinite scrolling. Add entries as the user scrolls
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {//scroll down
+                    Log.i("test", "scrolling down");
+                    if (loadingNewData && lM.getChildCount() + lM.findFirstVisibleItemPosition() >= lM.getItemCount()) {
+                        loadingNewData = false;
+                        for (int i = 1; i <= 5; i++) {
+                            currentlyLoadedData.add(currentlyLoadedData.size(), MainActivity.medicineDatabase.individualMedicineDao().findByPosition(currentlyLoadedData.size()));
+                        }
+                        hPRA.notifyDataSetChanged();
+                    }
+
+                }
+            }
+        });
+
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -76,30 +118,45 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
 
     @Override
     public void onResume() {
-        if(successfulScan == false){
-            Toast.makeText(getContext(), "Unknown Code", Toast.LENGTH_SHORT).show();
+
+        currentlyLoadedData = new ArrayList<>();//At the beginning, I want a few entries already there
+        for (int i = 0; i < 20; i++) {
+            if (MainActivity.medicineDatabase.individualMedicineDao().size() > i) {
+                currentlyLoadedData.add(i, MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(i));
+            }
         }
+        hPRA.notifyDataSetChanged(); //TODO remove and find other solution
         super.onResume();
     }
 
     @Override
     public void onScan(String code) {
         getFragmentManager().popBackStack();
+        List<CustomMedicineEntity> list = MainActivity.medicineDatabase.customMedicineDao().getAllSortedId(); //no sorting would probably be best, or sorting on time, as most recently inputted will probably be used the soonest
+        //TODO change to no sorting or time sorting
+        CustomMedicineEntity data = null;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).barcodes.contains(code)) {
+                data = list.get(i);
+                break;
+            }
+        }
 
-        IndividualCustomMedicine data = MainActivity.customMedicineManager.exists(code);
+
         if (data != null) { //Barcode has already been recorded into remembered medicine
-            IndividualMedicine entry = new IndividualMedicine();
+            IndividualMedicineEntity entry = new IndividualMedicineEntity();
             entry.name = data.name;
             entry.quantity = data.quantity;
             entry.reason = data.reason;
             entry.dose = data.dose;
-            entry.takenDateTime = Calendar.getInstance();
+            entry.takenDateTime = Calendar.getInstance().getTimeInMillis();
+            entry.inputTimeDate = Calendar.getInstance().getTimeInMillis();
             //TODO add use to entry edit page and other places
-            MainActivity.medicineManager.add(entry);
+            MainActivity.medicineDatabase.individualMedicineDao().insertAll(entry);
+            MainActivity.medicineDatabase.customMedicineDao().update(data.name, data.quantity, data.reason, data.dose, data.Id, data.use, data.barcodes, data.medicineLeft-1);
             getFragmentManager().popBackStack();
-            successfulScan = true;
         } else { //doesn't exist already, throw up a toast
-            successfulScan = false;
+
         }
     }
 }

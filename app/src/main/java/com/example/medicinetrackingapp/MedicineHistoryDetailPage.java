@@ -1,20 +1,23 @@
 package com.example.medicinetrackingapp;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import datastuff.IndividualMedicineEntity;
+
 public class MedicineHistoryDetailPage extends Fragment {
-    private IndividualMedicine displayMed;
+    private IndividualMedicineEntity displayMed;
     private int position;
 
 
@@ -30,20 +33,25 @@ public class MedicineHistoryDetailPage extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        displayMed = MainActivity.medicineManager.medicineHistoryList.get(position);
+        displayMed = MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(position);
         //display all the info in the specific medicine history fragment
         ((TextView) view.findViewById(R.id.doseview)).setText(Integer.toString(displayMed.dose));
         ((TextView) view.findViewById(R.id.nameview)).setText(displayMed.name);
         ((TextView) view.findViewById(R.id.quantityview)).setText(Integer.toString(displayMed.quantity));
         SimpleDateFormat d = new SimpleDateFormat("h:mm aa", Locale.getDefault());
-        ((TextView) view.findViewById(R.id.timetakenview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(displayMed.takenDateTime.getTime()), displayMed.takenDateTime.get(Calendar.MONTH), displayMed.takenDateTime.get(Calendar.DAY_OF_MONTH), displayMed.takenDateTime.get(Calendar.YEAR)));
-        ((TextView) view.findViewById(R.id.timeinputtedview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(displayMed.inputTimeDate.getTime()), displayMed.inputTimeDate.get(Calendar.MONTH), displayMed.inputTimeDate.get(Calendar.DAY_OF_MONTH), displayMed.inputTimeDate.get(Calendar.YEAR)));
+        Calendar takenDateTime = Calendar.getInstance();
+        Calendar inputTimeDate = Calendar.getInstance();
+        takenDateTime.setTimeInMillis(displayMed.takenDateTime);
+        inputTimeDate.setTimeInMillis(displayMed.inputTimeDate);
+
+        ((TextView) view.findViewById(R.id.timetakenview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(takenDateTime.getTime()), takenDateTime.get(Calendar.MONTH), takenDateTime.get(Calendar.DAY_OF_MONTH), takenDateTime.get(Calendar.YEAR)));
+        ((TextView) view.findViewById(R.id.timeinputtedview)).setText(String.format(Locale.getDefault(), "%s on %d/%d/%d", d.format(inputTimeDate.getTime()), inputTimeDate.get(Calendar.MONTH), inputTimeDate.get(Calendar.DAY_OF_MONTH), inputTimeDate.get(Calendar.YEAR)));
 
         view.findViewById(R.id.deletebutton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //remove entry and go back to history page
-                MainActivity.medicineManager.remove(position);
+                MainActivity.medicineDatabase.individualMedicineDao().delete(displayMed);
                 if (getFragmentManager() != null) {
                     getFragmentManager().popBackStack();
                 }
@@ -54,7 +62,7 @@ public class MedicineHistoryDetailPage extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
-                b.putInt("editMedicine",position);
+                b.putInt("editMedicine", position);
                 MedicineEditPage page = new MedicineEditPage(); //TODO make sure gets correct medicine
                 page.setArguments(b);
                 getFragmentManager().beginTransaction().replace(R.id.fragment_container, page).addToBackStack(null).commit();

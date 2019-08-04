@@ -1,22 +1,23 @@
 package com.example.medicinetrackingapp;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.room.Room;
+
+import com.google.android.material.navigation.NavigationView;
+
+import datastuff.IndividualMedicineDatabase;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static IndividualMedicineManager medicineManager;
     public static IndividualCustomMedicineManager customMedicineManager;
+    public static IndividualMedicineDatabase medicineDatabase;
     //TODO add dark theme --low priority
     //TODO add calendar with medicines on it for easier viewing --medium priority
     //TODO add pill count left to remembered medicines and count down when used
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //TODO add obfuscation name to custom meds and individual meds, then let user obfuscate data for private use in public
     //TODO add delete button for custom meds
 
+    //I will come back to encryption later.
+    //TODO add saving and sorting of data in database
+    //TODO deal with what primary id should be. need to be able to access entries regardless of primary id in a sorted order
+
+    //TODO deal with switching custom medicine preset when editing and changing data inside both edit and input page for quantity
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +61,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ((NavigationView) findViewById(R.id.navigation_pullout)).setNavigationItemSelectedListener(this);
 
 
-        medicineManager = new IndividualMedicineManager();
         customMedicineManager = new IndividualCustomMedicineManager();
-        loadSavedData();
 
-        //medicineManager.medicineHistoryList = new ArrayList<>();
-        medicineManager.fileContext = this;
         customMedicineManager.fileContext = this;
+
+        medicineDatabase = Room.databaseBuilder(getApplicationContext(), IndividualMedicineDatabase.class, "database-namenew").allowMainThreadQueries().fallbackToDestructiveMigration().build();
+        /*IndividualMedicineEntity i = new IndividualMedicineEntity();
+        i.name = "TestName2";
+        i.dose = 1;
+        i.quantity = 2;
+        //i.position = 2;
+
+        db.individualMedicineDao().insertAll(i);*/
+        //Log.i("test", db.individualMedicineDao().findByPosition(1).name + " " + db.individualMedicineDao().findByPosition(2).name); //it's saved automatically
+
+        /*for (int i = 0; i <= 10000; i++) {
+            IndividualMedicineEntity iM = new IndividualMedicineEntity();
+            Calendar cal = Calendar.getInstance();
+            iM.takenDateTime = cal.getTimeInMillis();
+            iM.inputTimeDate = cal.getTimeInMillis();
+            iM.dose = 0;
+            iM.quantity = 1;
+            iM.reason = "2";
+            iM.name = "nametest" + i;
+            iM.position = i;
+            medicineDatabase.individualMedicineDao().insertAll(iM);
+        }*/
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineHistoryPage()).commit();
     }
@@ -80,43 +106,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getTitle().toString().equals("Add Remember Medicine")) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RememberMedicineInputPage()).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CustomMedicineInputPage()).addToBackStack(null).commit();
         } else if (item.getTitle().toString().equals("Remember Medicine List")) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RememberMedicinePage()).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CustomMedicinePage()).addToBackStack(null).commit();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void loadSavedData() {
-        try {
-            FileInputStream fis = this.openFileInput("testFileIndividualMedicine");
-            ObjectInputStream is = new ObjectInputStream(fis);
-            ArrayList<IndividualMedicine> temp = (ArrayList<IndividualMedicine>) is.readObject();//TODO make lastChckForUpdate save and load
-            is.close();
-            fis.close();
-            Log.i("test", "save loaded for IndividualMedicine");
-
-            medicineManager.medicineHistoryList = temp;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("test", "No save found for IndividualMedicine");
-        }
-
-        try {
-            FileInputStream fis = this.openFileInput("testFileIndividualCustomMedicine");
-            ObjectInputStream is = new ObjectInputStream(fis);
-            ArrayList<IndividualCustomMedicine> temp = (ArrayList<IndividualCustomMedicine>) is.readObject();//TODO make lastChckForUpdate save and load
-            is.close();
-            fis.close();
-            Log.i("test", "save loaded for IndividualCustomMedicine");
-
-            customMedicineManager.rememberedMedicineList = temp;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("test", "No save found for IndividualCustomMedicine");
-        }
-
     }
 
 
@@ -124,11 +118,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_remembermedicinelist: {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RememberMedicinePage()).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CustomMedicinePage()).addToBackStack(null).commit();
             }
             break;
             case R.id.action_addremembermedicine: {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RememberMedicineInputPage()).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CustomMedicineInputPage()).addToBackStack(null).commit();
             }
             break;
             case R.id.action_settings: {

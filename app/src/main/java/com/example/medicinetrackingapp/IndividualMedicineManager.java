@@ -1,13 +1,11 @@
 package com.example.medicinetrackingapp;
 
 import android.content.Context;
-import android.util.Log;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@Deprecated
 public class IndividualMedicineManager implements Serializable {
 
     public ArrayList<IndividualMedicine> medicineHistoryList;
@@ -19,19 +17,19 @@ public class IndividualMedicineManager implements Serializable {
     }
 
     public void add(IndividualMedicine m) {
-        for (int i = 0; i < medicineHistoryList.size(); i++) {
+        /*for (int i = 0; i < medicineHistoryList.size(); i++) {
             Log.i("test", "Comparison result: " + m.compareTo(medicineHistoryList.get(i)));
             if (m.compareTo(medicineHistoryList.get(i)) >= 0) {
                 Log.i("test", "Adding new entry1");
                 medicineHistoryList.add(i, m);
-                save();
+                //save();
                 return;
             }
         }
         if (medicineHistoryList.size() == 0) {
             Log.i("test", "Adding new entry2");
             medicineHistoryList.add(m);
-            save();
+            //save();
             return;
         } else {
             Log.i("test", "size is: " + medicineHistoryList.size());
@@ -39,8 +37,9 @@ public class IndividualMedicineManager implements Serializable {
         if (m.baseCustomMedicine != null && m.baseCustomMedicine.medsLeft > 0) {
             m.baseCustomMedicine.medsLeft--;
         }
-        Log.i("test", "Not adding new entry");
+        Log.i("test", "Not adding new entry");*/
         medicineHistoryList.add(medicineHistoryList.size(), m);
+        //save();
     }
 
     public IndividualMedicine findByName(String name) {
@@ -53,7 +52,7 @@ public class IndividualMedicineManager implements Serializable {
     }
 
     public void save() {
-        ObjectOutputStream os = null;
+        /*ObjectOutputStream os = null;
         FileOutputStream fos = null;
         try {
             fos = fileContext.openFileOutput("testFileIndividualMedicine", Context.MODE_PRIVATE);
@@ -65,7 +64,7 @@ public class IndividualMedicineManager implements Serializable {
         } catch (Exception e) {
             Log.i("test", "Unable to save data");
             e.printStackTrace();
-        }
+        }*/
 
     }
 

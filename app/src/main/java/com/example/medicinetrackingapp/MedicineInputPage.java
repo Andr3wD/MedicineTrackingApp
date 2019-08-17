@@ -38,7 +38,6 @@ public class MedicineInputPage extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.add_medicine_fragment, container, false);
-        setHasOptionsMenu(true);
         getActivity().setTitle("Add Medicine");
         position = MainActivity.medicineDatabase.individualMedicineDao().size() + 1;
         return v;
@@ -76,6 +75,8 @@ public class MedicineInputPage extends Fragment {
                 }
                 Log.i("test", "Adding to list");
                 MainActivity.medicineDatabase.individualMedicineDao().insertAll(newEntry);
+                /*InputMethodManager iMM = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                iMM.hideSoftInputFromWindow(getView().getWindowToken(), 0);*/
                 if (getFragmentManager() != null) { //TODO make sure actually does something
                     getFragmentManager().popBackStack(); //pops back of stack, which should be the input page added from the history page
                 }

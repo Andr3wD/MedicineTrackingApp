@@ -18,7 +18,7 @@ import java.util.Locale;
 import datastuff.IndividualMedicineEntity;
 
 public class HistoryPageRecyclerAdapter extends RecyclerView.Adapter<HistoryPageRecyclerAdapter.ViewHolder> {
-    private ArrayList<IndividualMedicineEntity> mData;
+    ArrayList<IndividualMedicineEntity> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 

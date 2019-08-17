@@ -1,10 +1,12 @@
 package com.example.medicinetrackingapp;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,14 +34,23 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //Thanks to https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard https://stackoverflow.com/a/17789187
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = getActivity().getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(getActivity());
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
         View v = inflater.inflate(R.layout.medicine_history_fragment, container, false);
-        setHasOptionsMenu(true);
-        getActivity().setTitle("Medicine History");
+        getActivity().setTitle("History");
         me = this;
         currentlyLoadedData = new ArrayList<>();//At the beginning, I want a few entries already there
         for (int i = 0; i < 20; i++) {
             if (MainActivity.medicineDatabase.individualMedicineDao().size() > i) {
-                currentlyLoadedData.add(i, MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(i));
+                currentlyLoadedData.add(MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(i));
             }
         }
         return v;
@@ -88,13 +99,24 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0) {//scroll down
-                    Log.i("test", "scrolling down");
+                    Log.i("test", "scrolling down " + lM.findFirstVisibleItemPosition() + " " + lM.findLastCompletelyVisibleItemPosition());
                     if (loadingNewData && lM.getChildCount() + lM.findFirstVisibleItemPosition() >= lM.getItemCount()) {
+                        Log.i("test", "inside scroll down");
                         loadingNewData = false;
                         for (int i = 1; i <= 5; i++) {
-                            currentlyLoadedData.add(currentlyLoadedData.size(), MainActivity.medicineDatabase.individualMedicineDao().findByPosition(currentlyLoadedData.size()));
+                            Log.i("test", "adding new data");
+                            hPRA.mData.add(MainActivity.medicineDatabase.individualMedicineDao().getTimeSortedEntry(hPRA.mData.size()));
                         }
-                        hPRA.notifyDataSetChanged();
+                        recyclerView.post(new Runnable() {
+                            public void run() {
+                                // There is no need to use notifyDataSetChanged()
+                                hPRA.notifyItemRangeInserted(hPRA.mData.size() - 5, 5);
+                                /*for (int i = 0; i <= 4; i++) {
+                                    hPRA.notifyItemInserted(currentlyLoadedData.size() - i);
+                                }*/
+                                loadingNewData = true;
+                            }
+                        });
                     }
 
                 }
@@ -151,9 +173,12 @@ public class MedicineHistoryPage extends Fragment implements HistoryPageRecycler
             entry.dose = data.dose;
             entry.takenDateTime = Calendar.getInstance().getTimeInMillis();
             entry.inputTimeDate = Calendar.getInstance().getTimeInMillis();
+            entry.position = MainActivity.medicineDatabase.individualMedicineDao().size() + 1;
             //TODO add use to entry edit page and other places
             MainActivity.medicineDatabase.individualMedicineDao().insertAll(entry);
-            MainActivity.medicineDatabase.customMedicineDao().update(data.name, data.quantity, data.reason, data.dose, data.Id, data.use, data.barcodes, data.medicineLeft-1);
+            if (data.medicineLeft > 0) {
+                MainActivity.medicineDatabase.customMedicineDao().update(data.name, data.quantity, data.reason, data.dose, data.Id, data.use, data.barcodes, data.medicineLeft - 1);
+            }
             getFragmentManager().popBackStack();
         } else { //doesn't exist already, throw up a toast
 

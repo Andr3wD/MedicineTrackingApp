@@ -23,7 +23,6 @@ public class CustomMedicineInputPage extends Fragment implements BarcodeScannerP
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.remember_medicine_input_fragment, container, false);
-        setHasOptionsMenu(false);
         getActivity().setTitle("Add Custom Medicine");
         me = this;
         return v;

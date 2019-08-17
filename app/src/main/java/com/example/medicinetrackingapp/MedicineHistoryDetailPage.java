@@ -25,7 +25,7 @@ public class MedicineHistoryDetailPage extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.history_specific_medicine_fragment, container, false);
-        setHasOptionsMenu(true);
+        getActivity().setTitle("Details");
         Bundle b = getArguments();
         position = (int) b.get("displayMedInt");
         return v;
@@ -38,6 +38,7 @@ public class MedicineHistoryDetailPage extends Fragment {
         ((TextView) view.findViewById(R.id.doseview)).setText(Integer.toString(displayMed.dose));
         ((TextView) view.findViewById(R.id.nameview)).setText(displayMed.name);
         ((TextView) view.findViewById(R.id.quantityview)).setText(Integer.toString(displayMed.quantity));
+        ((TextView) view.findViewById(R.id.reasonview)).setText(displayMed.reason);
         SimpleDateFormat d = new SimpleDateFormat("h:mm aa", Locale.getDefault());
         Calendar takenDateTime = Calendar.getInstance();
         Calendar inputTimeDate = Calendar.getInstance();

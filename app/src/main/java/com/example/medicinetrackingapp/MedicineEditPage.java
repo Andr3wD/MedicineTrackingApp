@@ -39,7 +39,6 @@ public class MedicineEditPage extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.add_medicine_fragment, container, false);
-        setHasOptionsMenu(true);
         getActivity().setTitle("Medicine Edit");
         Bundle b = getArguments();
         position = (int) b.get("editMedicine");

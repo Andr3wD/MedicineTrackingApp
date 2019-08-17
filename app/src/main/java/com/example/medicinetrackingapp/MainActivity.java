@@ -4,23 +4,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.room.Room;
 
 import com.google.android.material.navigation.NavigationView;
 
-import datastuff.IndividualMedicineDatabase;
+import datastuff.MedicineDatabase;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static IndividualCustomMedicineManager customMedicineManager;
-    public static IndividualMedicineDatabase medicineDatabase;
+    public static MedicineDatabase medicineDatabase;
+    public static final String HISTORY_STACK_TAG = "history_root_fragment";
     //TODO add dark theme --low priority
     //TODO add calendar with medicines on it for easier viewing --medium priority
-    //TODO add pill count left to remembered medicines and count down when used
     //TODO add reminder when low on remembered medicines pills
     //TODO add button to scanner that turns on flashlight
     //TODO make it so you can add a new remembered medicine if barcode scan doesn't identify current remembered medicine
@@ -28,9 +27,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //TODO add date separators for medicines taken
     //TODO make settings page
     //TODO encrypt everything and don't send it anywhere over the internet (no google sheets integration or anything)
-    //TODO restrict or prevent the amount of data that is decrypted at a time.
-    //TODO add password or fingerprint login, etc...
-    //TODO add code tamper checking and preventing
+    //TODO add code tamper checking and preventing --no good way to do this
     //TODO figure out why MedicineHistoryDetailPage doesn't update immediately after editing medicine and fix --low priority
     //TODO add session timeout
     //TODO follow https://www.nowsecure.com/blog/2017/03/23/5-vital-tips-developing-hipaa-compliant-mobile-apps-checklist/
@@ -49,9 +46,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //TODO deal with switching custom medicine preset when editing and changing data inside both edit and input page for quantity
 
+    //TODO add infinite scroll to customMedicinePage
+    //TODO make buttons not add to back stack over and over infinitely
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR); //set notification items to be black instead of white
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -59,13 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         ((NavigationView) findViewById(R.id.navigation_pullout)).setNavigationItemSelectedListener(this);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AuthenticatePage()).commit();
 
-
-        customMedicineManager = new IndividualCustomMedicineManager();
-
-        customMedicineManager.fileContext = this;
-
-        medicineDatabase = Room.databaseBuilder(getApplicationContext(), IndividualMedicineDatabase.class, "database-namenew").allowMainThreadQueries().fallbackToDestructiveMigration().build();
         /*IndividualMedicineEntity i = new IndividualMedicineEntity();
         i.name = "TestName2";
         i.dose = 1;
@@ -74,21 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         db.individualMedicineDao().insertAll(i);*/
         //Log.i("test", db.individualMedicineDao().findByPosition(1).name + " " + db.individualMedicineDao().findByPosition(2).name); //it's saved automatically
-
-        /*for (int i = 0; i <= 10000; i++) {
-            IndividualMedicineEntity iM = new IndividualMedicineEntity();
-            Calendar cal = Calendar.getInstance();
-            iM.takenDateTime = cal.getTimeInMillis();
-            iM.inputTimeDate = cal.getTimeInMillis();
-            iM.dose = 0;
-            iM.quantity = 1;
-            iM.reason = "2";
-            iM.name = "nametest" + i;
-            iM.position = i;
-            medicineDatabase.individualMedicineDao().insertAll(iM);
-        }*/
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineHistoryPage()).commit();
     }
 
     @Override

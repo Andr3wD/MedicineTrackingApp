@@ -28,7 +28,6 @@ public class CustomMedicinePage extends Fragment implements CustomPageRecyclerAd
 
         RecyclerView rV = ((RecyclerView) view.findViewById(R.id.remember_medicine_recyclerview));
         rV.setLayoutManager(new LinearLayoutManager(getContext()));
-        IndividualCustomMedicine[] s = new IndividualCustomMedicine[MainActivity.customMedicineManager.rememberedMedicineList.size()];
         hPRA = new CustomPageRecyclerAdapter(getContext(), MainActivity.medicineDatabase.customMedicineDao().getAllSortedId());
         hPRA.setClickListener(this);
         rV.setAdapter(hPRA);

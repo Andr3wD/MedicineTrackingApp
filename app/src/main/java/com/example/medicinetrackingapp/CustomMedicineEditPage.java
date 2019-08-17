@@ -16,6 +16,7 @@ import datastuff.CustomMedicineEntity;
 public class CustomMedicineEditPage extends Fragment {
 
     private int id;
+    private CustomMedicineEntity entry;
 
     //TODO implement barcode stuff and make it work
 
@@ -23,7 +24,6 @@ public class CustomMedicineEditPage extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.remember_medicine_input_fragment, container, false);
-        setHasOptionsMenu(false);
         Bundle b = getArguments();
         id = (int) b.get("displayRememberMedicineId");
         getActivity().setTitle("Edit Custom Medicine");
@@ -59,7 +59,21 @@ public class CustomMedicineEditPage extends Fragment {
 
             }
         });
-        CustomMedicineEntity entry = MainActivity.medicineDatabase.customMedicineDao().findById(id);
+
+
+
+
+        entry = MainActivity.medicineDatabase.customMedicineDao().findById(id);
+
+        view.findViewById(R.id.remember_input_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.medicineDatabase.customMedicineDao().delete(entry);
+                if (getFragmentManager() != null) {
+                    getFragmentManager().popBackStack();
+                }
+            }
+        });
 
         //populate already known data into input page, but treat it as an edit page
         ((TextView) view.findViewById(R.id.remember_input_name)).setText(entry.name);
@@ -69,6 +83,7 @@ public class CustomMedicineEditPage extends Fragment {
         ((TextView) view.findViewById(R.id.remember_input_quantity)).setText(Integer.toString(entry.quantity));
         ((TextView) view.findViewById(R.id.remember_input_medsleft)).setText(Integer.toString(entry.medicineLeft));
         ((TextView) view.findViewById(R.id.remember_input_barcodes)).setText(entry.barcodes);
+
 
         super.onViewCreated(view, savedInstanceState);
     }

@@ -17,7 +17,6 @@ import datastuff.MedicineDatabase;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static MedicineDatabase medicineDatabase;
-    public static final String HISTORY_STACK_TAG = "history_root_fragment";
     //TODO add dark theme --low priority
     //TODO add calendar with medicines on it for easier viewing --medium priority
     //TODO add reminder when low on remembered medicines pills
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //TODO deal with switching custom medicine preset when editing and changing data inside both edit and input page for quantity
 
-    //TODO add infinite scroll to customMedicinePage
+    //TODO add infinite scroll to customMedicinePage (maybe, might not be enough entries to add infinite scrolling)
     //TODO make buttons not add to back stack over and over infinitely
 
     @Override

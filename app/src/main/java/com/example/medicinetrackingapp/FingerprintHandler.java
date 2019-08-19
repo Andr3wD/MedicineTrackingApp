@@ -50,7 +50,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         EditText text = context.findViewById(R.id.authenticate_password);
         SafeHelperFactory f = SafeHelperFactory.fromUser(text.getText());
         MainActivity.medicineDatabase = Room.databaseBuilder(context, MedicineDatabase.class, "medicine_database").openHelperFactory(f).allowMainThreadQueries().fallbackToDestructiveMigration().build();
-        context.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineHistoryPage()).addToBackStack(MainActivity.HISTORY_STACK_TAG).commit();
+        context.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MedicineHistoryPage()).commit();
         Log.i("test", "auth success");
         super.onAuthenticationSucceeded(result);
     }
